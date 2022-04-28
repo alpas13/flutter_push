@@ -31,7 +31,6 @@ class _MyHomePageState extends State<MyHomePage> {
   GameState gameState = GameState.readyToStart;
   Timer? waitingTimer;
   Timer? stopableTimer;
-  int buttonColor = 0xFF40CA88;
 
   @override
   Widget build(BuildContext context) {
@@ -80,20 +79,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   case GameState.readyToStart:
                     gameState = GameState.waiting;
                     millisecondsText = '';
-                    buttonColor = 0xFFE0982D;
                     _startWaitingTimer();
                     break;
                   case GameState.waiting:
                     break;
                   case GameState.canBeStopped:
                     gameState = GameState.readyToStart;
-                    buttonColor = 0xFF40CA88;
                     stopableTimer?.cancel();
                     break;
                 }
               }),
               child: ColoredBox(
-                color: Color(buttonColor),
+                color: _getButtonColor(),
                 child: SizedBox(
                   height: 200,
                   width: 200,
@@ -127,12 +124,22 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  _getButtonColor() {
+    switch (gameState) {
+      case GameState.readyToStart:
+        return const Color(0xFF40CA88);
+      case GameState.waiting:
+        return const Color(0xFFE0982D);
+      case GameState.canBeStopped:
+        return const Color(0xFFE02D47);
+    }
+  }
+
   void _startWaitingTimer() {
     int randomMilliseconds = Random().nextInt(4000) + 1000;
     waitingTimer = Timer(Duration(milliseconds: randomMilliseconds), () {
       setState(() {
         gameState = GameState.canBeStopped;
-        buttonColor = 0xFFE02D47;
       });
       _startStopableTimer();
     });
